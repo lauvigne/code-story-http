@@ -20,7 +20,7 @@ import static net.codestory.http.io.Strings.*;
 import java.util.*;
 
 public class YamlFrontMatter {
-  private static final String SEPARATOR = "---\n";
+  private static final String SEPARATOR = "---" + System.lineSeparator();
 
   private final String content;
   private final Map<String, Object> variables;
