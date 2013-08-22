@@ -15,10 +15,15 @@
  */
 package net.codestory.http.io;
 
-import java.io.*;
-import java.net.*;
-import java.nio.charset.*;
-import java.nio.file.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class Resources {
   private Resources() {
@@ -30,11 +35,11 @@ public class Resources {
   }
 
   public static String type(Path path) {
-    return path.toString().startsWith("classpath:") ? "classpath:" : "";
+    return path.toString().startsWith("classpath#") ? "classpath#" : "";
   }
 
   public static boolean exists(Path path) {
-    if ("classpath:".equals(type(path))) {
+    if ("classpath#".equals(type(path))) {
       URL url = ClassLoader.getSystemResource(path.toString().substring(10));
       if (url == null) {
         return false;
@@ -48,14 +53,14 @@ public class Resources {
   }
 
   public static String read(Path path, Charset charset) throws IOException {
-    if ("classpath:".equals(type(path))) {
+    if ("classpath#".equals(type(path))) {
       return readClasspath(path.toString().substring(10), charset);
     }
     return readFile(path, charset);
   }
 
   public static byte[] readBytes(Path path) throws IOException {
-    if ("classpath:".equals(type(path))) {
+    if ("classpath#".equals(type(path))) {
       return readClasspathBytes(path.toString().substring(10));
     }
     return readFileBytes(path);

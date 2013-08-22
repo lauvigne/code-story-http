@@ -15,32 +15,29 @@
  */
 package net.codestory.http.templating;
 
-import static org.fest.assertions.Assertions.*;
+import com.google.common.collect.ImmutableMap;
+import org.junit.Test;
 
-import java.io.*;
+import java.io.IOException;
 
-import net.codestory.http.templating.*;
-
-import org.junit.*;
-
-import com.google.common.collect.*;
+import static org.fest.assertions.Assertions.assertThat;
 
 public class MustacheCompilerTest {
   MustacheCompiler compiler = new MustacheCompiler();
 
   @Test
   public void compile() throws IOException {
-    String result = compiler.compile("classpath:", "-[[greeting]]-",
+    String result = compiler.compile("classpath#", "-[[greeting]]-",
         ImmutableMap.<String, Object>of("greeting", "Hello"));
 
     assertThat(result).isEqualTo("-Hello-");
   }
 
-  @Test
-  public void partials() throws IOException {
-    String result = compiler.compile("classpath:", "-[[>web/partial]] [[>web/partial]]-",
-        ImmutableMap.<String, Object>of("name", "Bob"));
+    @Test
+    public void partials() throws IOException {
+        String result = compiler.compile("classpath#", "-[[>web/partial]] [[>web/partial]]-",
+                ImmutableMap.<String, Object>of("name", "Bob"));
 
-    assertThat(result).isEqualTo("-Hello Bob Hello Bob-");
-  }
+        assertThat(result).isEqualTo("-Hello Bob Hello Bob-");
+    }
 }

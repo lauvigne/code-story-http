@@ -15,10 +15,12 @@
  */
 package net.codestory.http.errors;
 
-import java.io.*;
+import net.codestory.http.Payload;
+import net.codestory.http.templating.Template;
 
-import net.codestory.http.*;
-import net.codestory.http.templating.*;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 public class ErrorPage {
   private final int code;
@@ -36,7 +38,7 @@ public class ErrorPage {
   }
 
   private String filename() throws IOException {
-    return code == 404 ? "classpath:404.html" : "classpath:500.html";
+    return code == 404 ? "classpath#404.html" : "classpath#500.html";
   }
 
   private static String toString(Exception error) {

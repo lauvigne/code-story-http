@@ -15,19 +15,22 @@
  */
 package net.codestory.http;
 
-import static com.jayway.restassured.RestAssured.*;
-import static java.nio.charset.StandardCharsets.*;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
+import com.jayway.restassured.specification.ResponseSpecification;
+import net.codestory.http.annotations.Get;
+import net.codestory.http.annotations.Post;
+import net.codestory.http.templating.Template;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
 
-import net.codestory.http.annotations.*;
-import net.codestory.http.templating.*;
+import static com.jayway.restassured.RestAssured.given;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.Mockito.spy;
 
-import org.junit.*;
-
-import com.jayway.restassured.specification.*;
 
 public class WebServerTest {
   static WebServer server = new WebServer() {
@@ -86,7 +89,7 @@ public class WebServerTest {
 
   @Test
   public void static_content_from_classpath() {
-    server.configure(routes -> routes.staticDir("classpath:web"));
+    server.configure(routes -> routes.staticDir("classpath#web"));
 
     expect().content(containsString("Hello From a File")).contentType("text/html").when().get("/index.html");
     expect().content(containsString("Hello From a File")).contentType("text/html").when().get("/");
@@ -103,7 +106,7 @@ public class WebServerTest {
 
   @Test
   public void dont_serve_directories() {
-    server.configure(routes -> routes.staticDir("classpath:web"));
+    server.configure(routes -> routes.staticDir("classpath#web"));
 
     expect().statusCode(404).when().get("/js");
   }
@@ -170,8 +173,8 @@ public class WebServerTest {
   @Test
   public void templates() {
     server.configure(routes -> {
-      routes.staticDir("classpath:web");
-      routes.get("/hello/:name", (name) -> new Template("classpath:web/1variable.txt").render("name", name));
+      routes.staticDir("classpath#web");
+      routes.get("/hello/:name", (name) -> new Template("classpath#web/1variable.txt").render("name", name));
     });
 
     expect().content(containsString("<div>_PREFIX_TEXT_SUFFIX_</div>")).when().get("/pageYaml");
@@ -181,7 +184,7 @@ public class WebServerTest {
   @Test
   public void priority_to_route() {
     server.configure(routes -> {
-      routes.staticDir("classpath:web");
+      routes.staticDir("classpath#web");
       routes.get("/", () -> "PRIORITY");
     });
 
@@ -237,7 +240,7 @@ public class WebServerTest {
   @Test
   public void post() {
     server.configure(routes -> {
-      routes.staticDir("classpath:web");
+      routes.staticDir("classpath#web");
       routes.post("/post", () -> "Done");
       routes.get("/get", () -> "Done");
       routes.get("/action", () -> "Done GET");

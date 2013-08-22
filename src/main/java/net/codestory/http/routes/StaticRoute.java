@@ -15,20 +15,21 @@
  */
 package net.codestory.http.routes;
 
-import java.io.*;
-import java.nio.file.*;
-
-import net.codestory.http.*;
+import com.sun.net.httpserver.HttpExchange;
+import net.codestory.http.Payload;
 import net.codestory.http.filters.Filter;
-import net.codestory.http.io.*;
+import net.codestory.http.io.Resources;
 
-import com.sun.net.httpserver.*;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 class StaticRoute implements Filter {
   private final String root;
 
   StaticRoute(String root) {
-    if (!root.startsWith("classpath:") && !new File(root).exists()) {
+    if (!root.startsWith("classpath#") && !new File(root).exists()) {
       throw new IllegalArgumentException("Invalid directory for static content: " + root);
     }
     this.root = root;
