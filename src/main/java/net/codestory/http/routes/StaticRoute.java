@@ -51,7 +51,7 @@ class StaticRoute implements Filter {
   }
 
   private boolean serve(Path path, HttpExchange exchange) throws IOException {
-    if (path.normalize().toString().startsWith(root) && Resources.exists(path)) {
+    if (path.normalize().startsWith(root) && Resources.exists(path)) {
       new Payload(path).writeTo(exchange);
       return true;
     }
