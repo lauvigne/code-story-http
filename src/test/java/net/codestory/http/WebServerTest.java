@@ -52,7 +52,7 @@ public class WebServerTest {
 
   @Test
   public void not_found() {
-    expect404when().when().get("/");
+    expect404().when().get("/");
   }
 
   @Test
@@ -100,15 +100,15 @@ public class WebServerTest {
     expect().content(containsString("* {}")).contentType("text/css").when().get("/assets/style.css");
     expect().content(containsString("body h1 {\n  color: red;\n}\n")).contentType("text/css").when().get("/assets/style.less");
     expect().content(containsString("<strong>Hello</strong>")).contentType("text/html").when().get("/hello.md");
-    expect404when().when().get("/../private.txt");
-    expect404when().when().get("/unknown");
+    expect404().when().get("/../private.txt");
+    expect404().when().get("/unknown");
   }
 
   @Test
   public void dont_serve_directories() {
     server.configure(routes -> routes.staticDir("classpath#web"));
 
-    expect404when().when().get("/js");
+    expect404().when().get("/js");
   }
 
   @Test
@@ -260,9 +260,9 @@ public class WebServerTest {
     expect().content(equalTo("Done GET")).when().get("/action");
     expect().content(equalTo("CREATED")).when().post("/person");
     //expect().statusCode(405).when().post("/get");
-    expect404when().when().post("/get");
-    expect404when().when().post("/unknown");
-    expect404when().when().post("/index.html");
+    expect404().when().post("/get");
+    expect404().when().post("/unknown");
+    expect404().when().post("/index.html");
     //expect().statusCode(405).when().post("/index.html");
   }
 
@@ -277,7 +277,7 @@ public class WebServerTest {
     return given().port(server.port()).expect();
   }
 
-  private ResponseSpecification expect404when() {
+  private ResponseSpecification expect404() {
     //read the content is important on windows os to prevent dead lock
     return expect().content(containsString("404 - Page not found")).contentType("text/html").statusCode(404);
   }
