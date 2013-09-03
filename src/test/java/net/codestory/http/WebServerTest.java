@@ -52,7 +52,7 @@ public class WebServerTest {
 
   @Test
   public void not_found() {
-    expect().content(containsString("404 - Page not found")).contentType("text/html").statusCode(404).when().get("/");
+    expect404when().when().get("/");
   }
 
   @Test
@@ -100,20 +100,20 @@ public class WebServerTest {
     expect().content(containsString("* {}")).contentType("text/css").when().get("/assets/style.css");
     expect().content(containsString("body h1 {\n  color: red;\n}\n")).contentType("text/css").when().get("/assets/style.less");
     expect().content(containsString("<strong>Hello</strong>")).contentType("text/html").when().get("/hello.md");
-    expect().statusCode(404).when().get("/../private.txt");
-    expect().statusCode(404).when().get("/unknown");
+    expect404when().when().get("/../private.txt");
+    expect404when().when().get("/unknown");
   }
 
   @Test
   public void dont_serve_directories() {
     server.configure(routes -> routes.staticDir("classpath#web"));
 
-    expect().statusCode(404).when().get("/js");
+    expect404when().when().get("/js");
   }
 
   @Test
   public void static_content_from_file() {
-    String web = ClassLoader.getSystemResource("web").getFile();
+    String web = getFilenameInSystemResource("web");
 
     server.configure(routes -> routes.staticDir(web));
 
@@ -260,9 +260,9 @@ public class WebServerTest {
     expect().content(equalTo("Done GET")).when().get("/action");
     expect().content(equalTo("CREATED")).when().post("/person");
     //expect().statusCode(405).when().post("/get");
-    expect().statusCode(404).when().post("/get");
-    expect().statusCode(404).when().post("/unknown");
-    expect().statusCode(404).when().post("/index.html");
+    expect404when().when().post("/get");
+    expect404when().when().post("/unknown");
+    expect404when().when().post("/index.html");
     //expect().statusCode(405).when().post("/index.html");
   }
 
@@ -275,6 +275,22 @@ public class WebServerTest {
 
   private ResponseSpecification expect() {
     return given().port(server.port()).expect();
+  }
+
+  private ResponseSpecification expect404when() {
+    //read the content is important on windows os to prevent dead lock
+    return expect().content(containsString("404 - Page not found")).contentType("text/html").statusCode(404);
+  }
+
+  private String getFilenameInSystemResource(String name) {
+    String path = ClassLoader.getSystemResource(name).getPath();
+
+    //hack on windows os :(
+    if (path.matches("/\\w:/.*")) {
+        path = path.substring(1);
+    }
+
+    return path;
   }
 
   static class Person {
